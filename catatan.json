@@ -1,0 +1,120 @@
+{
+    "on_auth_users": {
+        "class": [
+            ".dropdown .hn-user",
+            ".hnu-button",
+            ".hnu-dropdown",
+            ".hnu-user",
+            ".hnuu-img",
+            ".hnuu-info",
+            ".hnuu-link"
+        ]
+    },
+    "search box": {
+        "class": [
+            ".h-search",
+            ".searchForm",
+            "#searchForm"
+        ],
+        "form": {
+            "class": ".searchForm",
+            "id": "#searchForm",
+            "action": "/search",
+            "method": "post"
+        },
+        "input_type": {
+            "select option": {
+                "div": ".sb-country",
+                "class": ".select-country",
+                "name": "countryCode",
+                "id": "numberCountryCode",
+                "value": "option value"
+            },
+            "input tel": {
+                "div": "sb-input",
+                "id": "numberInput",
+                "name": "phoneNumber"
+            }
+        },
+        "button": {
+            "class": "sb-button",
+            "input_type": {
+                "name": "hash",
+                "type": "hidden",
+                "value": "value of hash"
+            },
+            "input_type captchaToken": {
+                "name": "checkBoxCaptchaToken",
+                "type": "hidden",
+                "id": "checkBoxCaptchaToken",
+                "div-captchaToken": {
+                    "class": [
+                        "grecaptcha-badge",
+                        {
+                            "class": "grecaptcha-logo",
+                            "iframe": {
+                                "tittle": "reCAPTCHA",
+                                "src": "data reCAPTCHA",
+                                "name": "name reCAPTCHA"
+                            },
+                            "textarea": {
+                                "id": "g-recaptcha-response",
+                                "class": "g-recaptcha-response"
+                            }
+                        }
+                    ],
+                    "button": {
+                        "class": "g-recaptcha",
+                        "type": "submit",
+                        "id": "submitButton",
+                        "data-sitekey": "6LdoKUgaAAAAAJ89hp7hcHmzT7LO88zQd3MaHSf_",
+                        "data-callback": "f3cca13958dec48d7a61e9363ab975d00311dcc2f",
+                        "data-action": "b14dd90828cb7ab67266f8eb4d5ccbd630162d16d2df3a96d7fa6b7dd17f81a2"
+                    }
+                }
+            }
+        }
+    },
+    "result": {
+        "class": "result",
+        "result profile": {
+            "class": {
+                "div-box": "box r-profile-box",
+                "div-card": "rpb-card",
+                "rpbi-img": [
+                    "<figure style='background-image:url('assets/img/user-default.jpg');'></figure>"
+                ],
+                "rpbi-info": {
+                    "name": "h1",
+                    "phone_number": "<strong><a href='tel:+6285771116774'>+6285771116774</a></strong>",
+                    "provider": "<em> Indosat Ooredoo Hutchison - Indonesia </em>"
+                }
+            }
+        },
+        "result tag box": {
+            "class": "box r-tag-box",
+            "span": {
+                "class": "button-collapse",
+                "aria-expanded": false,
+                "if true": true,
+                "<a>": {
+                    "class": "rbi-link",
+                    "href": "javascript;;",
+                    "data-toggle": "collapse",
+                    "data-target": "#tagList",
+                    "aria-expanded": false,
+                    "if true": true
+                }
+            },
+            "div-result tagList": {
+                "class": "r-tag-list",
+                "if true": "r-tag-list collapse show",
+                "id": "tagList",
+                "style": "",
+                "item": {
+                    "class": "rtl-item"
+                }
+            }
+        }
+    }
+}
