@@ -279,11 +279,6 @@ class GClient extends EventEmitter {
       const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
       if (buttonAttribute != "true") {
         buttonCollapse.click();
-      } else {
-        result.isTagListExpanded = buttonAttribute;
-        const tagList = document.querySelector(".r-tag-list");
-        const tagItem = tagList.querySelectorAll("span.rtl-item");
-        result.tags = Array.from(tagItem).map((item) => item.innerText);
       }
       const localStorage = JSON.stringify(window.localStorage);
       result.localStorage = JSON.parse(localStorage);
