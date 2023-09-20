@@ -8,6 +8,7 @@ module.exports = {
   version: require("./package.json").version,
 
   // Structures
+  PhoneNumber: require("./src/structures/PhoneNumber"),
 
   // Auth Strategies
   GLocalAuth: require("./src/authStrategies/GLocalAuth"),

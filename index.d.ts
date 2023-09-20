@@ -13,7 +13,10 @@ declare namespace GCWebJS {
 
     initialize(): Promise<void>;
 
-    searchNumber(countryCode: string, phoneNumber: PhoneNumber): Promise<void>;
+    searchNumber(
+      countryCode: string,
+      phoneNumber: PhoneNumber
+    ): Promise<PhoneNumber>;
 
     /** Generic event */
     on(event: string, listener: (...args: any) => void): this;
@@ -42,6 +45,17 @@ declare namespace GCWebJS {
 
     /** Emitted when the client has initialized and is ready to receive messages */
     on(event: "ready", listener: () => void): this;
+  }
+
+  export interface PhoneNumber {
+    /** String that represent from name */
+    name: string;
+    /** String that represent from phone_number . */
+    phone_number: string;
+    /** String that represents from provider */
+    provider: string;
+    /** localStorage content */
+    localStorage: object;
   }
 
   export interface LocalWebCacheOptions {

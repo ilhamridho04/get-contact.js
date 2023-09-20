@@ -243,6 +243,7 @@ class GClient extends EventEmitter {
   /**
    * Send a message to a specific chatId
    * @param {string} countryCode
+   * @param {string} phoneNumber
    *
    * @returns {Promise<PhoneNumber>} Message that was just sent
    */

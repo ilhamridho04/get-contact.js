@@ -27,8 +27,9 @@ client.on("qr", (qr) => {
 
 client.on("authenticated", async () => {
   console.log("AUTHENTICATED");
-  const testSearch = await client.searchNumber("ID", "085771116774");
-  console.log(testSearch);
+  client.searchNumber("ID", "085771116774").then((result) => {
+    console.log(result);
+  });
 });
 
 client.on("auth_failure", (msg) => {
