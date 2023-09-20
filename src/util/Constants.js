@@ -23,7 +23,7 @@ exports.DefaultOptions = {
 };
 
 /**
- * Client status
+ * GClient status
  * @readonly
  * @enum {number}
  */

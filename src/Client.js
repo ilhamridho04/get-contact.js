@@ -16,7 +16,7 @@ const { GcontcWebURL, DefaultOptions, Events } = require("./util/Constants");
 /**
  * Starting point for interacting with the WhatsApp Web API
  * @extends {EventEmitter}
- * @param {object} options - Client options
+ * @param {object} options - GClient options
  * @param {AuthStrategy} options.authStrategy - Determines how to save and restore sessions. Will use LegacySessionAuth if options.session is set. Otherwise, NoAuth will be used.
  * @param {string} options.webVersion - The version of WhatsApp Web to use. Use options.webVersionCache to configure how the version is retrieved.
  * @param {object} options.webVersionCache - Determines how to retrieve the WhatsApp Web version. Defaults to a local cache (LocalWebCache) that falls back to latest if the requested version is not found.
@@ -30,14 +30,14 @@ const { GcontcWebURL, DefaultOptions, Events } = require("./util/Constants");
  * @param {boolean} options.bypassCSP - Sets bypassing of page's Content-Security-Policy.
  * @param {object} options.proxyAuthentication - Proxy Authentication object.
  *
- * @fires Client#qr
- * @fires Client#authenticated
- * @fires Client#auth_failure
- * @fires Client#ready
- * @fires Client#disconnected
- * @fires Client#change_state
+ * @fires GClient#qr
+ * @fires GClient#authenticated
+ * @fires GClient#auth_failure
+ * @fires GClient#ready
+ * @fires GClient#disconnected
+ * @fires GClient#change_state
  */
-class Client extends EventEmitter {
+class GClient extends EventEmitter {
   constructor(options = {}) {
     super();
 
@@ -126,7 +126,7 @@ class Client extends EventEmitter {
       if (failed) {
         /**
          * Emitted when there has been an error while trying to restore an existing session
-         * @event Client#auth_failure
+         * @event GClient#auth_failure
          * @param {string} message
          */
         this.emit(Events.AUTHENTICATION_FAILURE, failureEventPayload);
@@ -182,7 +182,7 @@ class Client extends EventEmitter {
         }
         /**
          * Emitted when a QR code is received
-         * @event Client#qr
+         * @event GClient#qr
          * @param {string} qr QR Code
          */
         this.emit(Events.QR_RECEIVED, QRCode);
@@ -227,13 +227,13 @@ class Client extends EventEmitter {
 
     /**
      * Emitted when authentication is successful
-     * @event Client#authenticated
+     * @event GClient#authenticated
      */
     this.emit(Events.AUTHENTICATED, authEventPayload);
 
     /**
      * Emitted when the client has initialized and is ready to receive messages.
-     * @event Client#ready
+     * @event GClient#ready
      */
     this.emit(Events.READY);
     this.authStrategy.afterAuthReady();
@@ -293,4 +293,4 @@ class Client extends EventEmitter {
   }
 }
 
-module.exports = Client;
+module.exports = GClient;

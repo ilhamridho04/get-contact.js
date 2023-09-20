@@ -1,13 +1,13 @@
-const { Client, LocalAuth } = require("./index");
+const { GClient, GLocalAuth } = require("./index");
 const qrcode = require("qrcode-terminal");
 
-const client = new Client({
+const client = new GClient({
   // proxyAuthentication: { username: 'username', password: 'password' },
   puppeteer: {
     // args: ['--proxy-server=proxy-server-that-requires-authentication.example.com'],
     headless: false,
   },
-  authStrategy: new LocalAuth({
+  authStrategy: new GLocalAuth({
     clientId: "test-aja-inimah",
     // dataPath: './.wwebjs_auth/'
   }),

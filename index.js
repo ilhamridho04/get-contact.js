@@ -3,14 +3,14 @@
 const Constants = require("./src/util/Constants");
 
 module.exports = {
-  Client: require("./src/Client"),
+  GClient: require("./src/GClient"),
 
   version: require("./package.json").version,
 
   // Structures
 
   // Auth Strategies
-  LocalAuth: require("./src/authStrategies/LocalAuth"),
+  GLocalAuth: require("./src/authStrategies/GLocalAuth"),
 
   ...Constants,
 };

@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import * as puppeteer from "puppeteer";
 
 declare namespace GCWebJS {
-  export class Client extends EventEmitter {
+  export class GClient extends EventEmitter {
     constructor(options: ClientOptions);
 
     /** Puppeteer page running WhatsApp Web */
@@ -58,7 +58,7 @@ declare namespace GCWebJS {
    * Base class which all authentication strategies extend
    */
   export abstract class AuthStrategy {
-    setup: (client: Client) => void;
+    setup: (client: GClient) => void;
     beforeBrowserInitialized: () => Promise<void>;
     afterBrowserInitialized: () => Promise<void>;
     onAuthenticationNeeded: () => Promise<{
@@ -76,7 +76,7 @@ declare namespace GCWebJS {
   /**
    * Local directory-based authentication
    */
-  export class LocalAuth extends AuthStrategy {
+  export class GLocalAuth extends AuthStrategy {
     public clientId?: string;
     public dataPath?: string;
     constructor(options?: { clientId?: string; dataPath?: string });
@@ -99,7 +99,7 @@ declare namespace GCWebJS {
     STATE_CHANGED = "change_state",
   }
 
-  /** Client status */
+  /** GClient status */
   export enum Status {
     INITIALIZING = 0,
     AUTHENTICATING = 1,

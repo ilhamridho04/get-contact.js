@@ -7,10 +7,10 @@ const BaseAuthStrategy = require("./BaseAuthStrategy");
 /**
  * Local directory-based authentication
  * @param {object} options - options
- * @param {string} options.clientId - Client id to distinguish instances if you are using multiple, otherwise keep null if you are using only one instance
+ * @param {string} options.clientId - GClient id to distinguish instances if you are using multiple, otherwise keep null if you are using only one instance
  * @param {string} options.dataPath - Change the default path for saving session files, default is: "./.wwebjs_auth/"
  */
-class LocalAuth extends BaseAuthStrategy {
+class GLocalAuth extends BaseAuthStrategy {
   constructor({ clientId, dataPath } = {}) {
     super();
 
@@ -34,7 +34,7 @@ class LocalAuth extends BaseAuthStrategy {
 
     if (puppeteerOpts.userDataDir && puppeteerOpts.userDataDir !== dirPath) {
       throw new Error(
-        "LocalAuth is not compatible with a user-supplied userDataDir."
+        "GLocalAuth is not compatible with a user-supplied userDataDir."
       );
     }
 
@@ -59,4 +59,4 @@ class LocalAuth extends BaseAuthStrategy {
   }
 }
 
-module.exports = LocalAuth;
+module.exports = GLocalAuth;
