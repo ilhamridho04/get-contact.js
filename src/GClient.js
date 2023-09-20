@@ -12,6 +12,7 @@ const Jimp = require("jimp");
 
 const Util = require("./util/Util");
 const { GcontcWebURL, DefaultOptions, Events } = require("./util/Constants");
+const PhoneNumber = require("./structures/PhoneNumber");
 
 /**
  * Starting point for interacting with the WhatsApp Web API
@@ -284,7 +285,7 @@ class GClient extends EventEmitter {
       result.localStorage = JSON.parse(localStorage);
       return result;
     });
-    return resultData;
+    return new PhoneNumber(this, resultData);
   }
 }
 
