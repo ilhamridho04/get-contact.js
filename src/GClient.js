@@ -24,6 +24,7 @@ const PhoneNumber = require("./structures/PhoneNumber");
  * @param {number} options.authTimeoutMs - Timeout for authentication selector in puppeteer
  * @param {object} options.puppeteer - Puppeteer launch options. View docs here: https://github.com/puppeteer/puppeteer/
  * @param {number} options.qrMaxRetries - How many times should the qrcode be refreshed before giving up
+ * @param {number} options.resultMaxRetries - How many times should the result be refreshed before giving up
  * @param {number} options.takeoverOnConflict - If another whatsapp web session is detected (another browser), take over the session in the current browser
  * @param {number} options.takeoverTimeoutMs - How much time to wait before taking over the session
  * @param {string} options.userAgent - User agent to use in puppeteer
@@ -166,8 +167,8 @@ class GClient extends EventEmitter {
 
           // Membaca QR code dari gambar
           const image = await Jimp.read(imagePath);
-          const qr = new QrCode();
-          qr.callback = (err, value) => {
+          const qrcode = new QrCode();
+          qrcode.callback = (err, value) => {
             if (err) {
               console.error(err);
             } else {
@@ -176,7 +177,7 @@ class GClient extends EventEmitter {
               fs.unlinkSync(imagePath);
             }
           };
-          qr.decode(image.bitmap);
+          qrcode.decode(image.bitmap);
         } else {
           console.error(`Gagal mengunduh gambar dari ${imageUrl}`);
           await newPage.close();
@@ -248,6 +249,8 @@ class GClient extends EventEmitter {
    * @returns {Promise<PhoneNumber>} Message that was just sent
    */
   async searchNumber(countryCode, phoneNumber = {}) {
+    let resultRetries = 0;
+
     const newSearch = await this.pupPage.evaluate(
       async (countryCode, phoneNumber) => {
         const formElement = document.querySelector(".searchForm");
@@ -260,33 +263,65 @@ class GClient extends EventEmitter {
       phoneNumber
     );
 
-    // Tunggu hasil pencarian dimuat (sesuai dengan kebutuhan Anda)
-    await this.pupPage.waitForSelector(".box.r-profile-box"); // Ganti dengan selektor hasil pencarian
-
-    const resultData = await this.pupPage.evaluate(() => {
-      const result = {};
-      // Mengambil informasi dari profil
-      const profileBox = document.querySelector(".box.r-profile-box");
-      if (profileBox) {
-        result.name = profileBox.querySelector("h1").innerText;
-        result.phone_number = profileBox.querySelector("strong a").innerText;
-        result.provider = profileBox.querySelector("em").innerText;
+    await this.pupPage.exposeFunction("resultChanged", async (resData) => {
+      console.log(resData);
+      if (this.options.resultMaxRetries > 0) {
+        resultRetries++;
+        if (resultRetries > this.options.resultMaxRetries) {
+          this.emit(Events.DISCONNECTED, "Max qrcode retries reached");
+          await this.destroy();
+        }
       }
-
-      // Mengambil informasi dari tag box
-      const tagBox = document.querySelector(".box.r-tag-box");
-      tagBox.querySelector("r-box-info");
-      const buttonCollapse = tagBox.querySelector(".rbi-link");
-      buttonCollapse.click();
-      const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
-      if (buttonAttribute != "true") {
-        buttonCollapse.click();
-      }
-      const localStorage = JSON.stringify(window.localStorage);
-      result.localStorage = JSON.parse(localStorage);
-      return result;
     });
-    return new PhoneNumber(this, resultData);
+
+    let responseData;
+    // Wait for code scan
+    try {
+      await this.pupPage.waitForSelector(".box.r-profile-box", { timeout: 0 });
+
+      responseData = await this.pupPage.evaluate(() => {
+        const result = {};
+        // Mengambil informasi dari profil
+        const profileBox = document.querySelector(".box.r-profile-box");
+        if (profileBox) {
+          result.name = profileBox.querySelector("h1").innerText;
+          result.phone_number = profileBox.querySelector("strong a").innerText;
+          result.provider = profileBox.querySelector("em").innerText;
+        }
+
+        // Mengambil informasi dari tag box
+        const tagBox = document.querySelector(".box.r-tag-box");
+        tagBox.querySelector(".r-box-info");
+        const buttonCollapse = document.querySelector(".rbi-link");
+        buttonCollapse.click();
+        const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
+        if (buttonAttribute != "true") {
+          buttonCollapse.click();
+        } else {
+          result.isTagListExpanded = buttonAttribute;
+          const tagList = document.querySelector(".r-tag-list");
+          const tagItem = tagList.querySelectorAll(".rtl-item");
+          result.tags = Array.from(tagItem).map((item) => item.innerText);
+        }
+        const localStorage = JSON.stringify(window.localStorage);
+        result.localStorage = JSON.parse(localStorage);
+        window.resultChanged(result);
+        return result;
+      });
+    } catch (error) {
+      if (
+        error.name === "ProtocolError" &&
+        error.message &&
+        error.message.match(/Target closed/)
+      ) {
+        // something has called .destroy() while waiting
+        return;
+      }
+
+      throw error;
+    }
+
+    return new PhoneNumber(this, responseData);
   }
 }
 
