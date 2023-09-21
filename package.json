@@ -1,6 +1,6 @@
 {
   "name": "get-contact.js",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Library for interacting with the GetContact Web API",
   "main": "./index.js",
   "typings": "./index.d.ts",

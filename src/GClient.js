@@ -246,9 +246,6 @@ class GClient extends EventEmitter {
    * @returns {Promise<PhoneNumber>} Message that was just sent
    */
   async searchNumber(countryCode, phoneNumber = {}) {
-    let resultRetries = 0;
-    let responseData;
-
     await this.pupPage.evaluate(
       async (countryCode, phoneNumber) => {
         const formElement = document.querySelector(".searchForm");
@@ -260,62 +257,38 @@ class GClient extends EventEmitter {
       countryCode,
       phoneNumber
     );
-
-    await this.pupPage.exposeFunction(phoneNumber, async (resData) => {
-      responseData = resData;
-      if (this.options.resultMaxRetries > 0) {
-        resultRetries++;
+    await this.pupPage.waitForSelector(".box.r-profile-box", { timeout: 0 });
+    const responseData = await this.pupPage.evaluate(async (name) => {
+      const result = {};
+      // Mengambil informasi dari profil
+      const profileBox = document.querySelector(".box.r-profile-box");
+      if (profileBox) {
+        result.name = profileBox.querySelector("h1").innerText;
+        result.phone_number = profileBox.querySelector("strong a").innerText;
+        result.provider = profileBox.querySelector("em").innerText;
       }
-    });
 
-    // Wait for code scan
-    try {
-      await this.pupPage.waitForSelector(".box.r-profile-box", { timeout: 0 });
-      await this.pupPage.evaluate(async (name) => {
-        const result = {};
-        // Mengambil informasi dari profil
-        const profileBox = document.querySelector(".box.r-profile-box");
-        if (profileBox) {
-          result.name = profileBox.querySelector("h1").innerText;
-          result.phone_number = profileBox.querySelector("strong a").innerText;
-          result.provider = profileBox.querySelector("em").innerText;
-        }
-
-        // Mengambil informasi dari tag box
-        const tagBox = document.querySelector(".box.r-tag-box");
-        tagBox.querySelector(".r-box-info");
-        const buttonCollapse = document.querySelector(".rbi-link");
+      // Mengambil informasi dari tag box
+      const tagBox = document.querySelector(".box.r-tag-box");
+      tagBox.querySelector(".r-box-info");
+      const buttonCollapse = document.querySelector(".rbi-link");
+      buttonCollapse.click();
+      const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
+      if (buttonAttribute != "true") {
         buttonCollapse.click();
-        const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
-        if (buttonAttribute != "true") {
-          buttonCollapse.click();
-        } else {
-          result.isTagListExpanded = buttonAttribute;
-          const tagList = document.querySelector(".r-tag-list");
-          const tagItem = tagList.querySelectorAll(".rtl-item");
-          result.tags = Array.from(tagItem).map((item) => item.innerText);
-        }
-        const localStorage = JSON.stringify(window.localStorage);
-        result.localStorage = JSON.parse(localStorage);
-
-        window[name](result);
-        responseData = result;
-        return result;
-      }, phoneNumber);
-
-      await this.pupPage.goBack();
-    } catch (error) {
-      if (
-        error.name === "ProtocolError" &&
-        error.message &&
-        error.message.match(/Target closed/)
-      ) {
-        // something has called .destroy() while waiting
-        return;
+      } else {
+        result.isTagListExpanded = buttonAttribute;
+        const tagList = document.querySelector(".r-tag-list");
+        const tagItem = tagList.querySelectorAll(".rtl-item");
+        result.tags = Array.from(tagItem).map((item) => item.innerText);
       }
+      const localStorage = JSON.stringify(window.localStorage);
+      result.localStorage = JSON.parse(localStorage);
+      return result;
+    }, phoneNumber);
 
-      throw error;
-    }
+    await this.pupPage.goBack();
+
     return new PhoneNumber(this, responseData);
   }
 }
