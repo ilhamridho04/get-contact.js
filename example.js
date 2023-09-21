@@ -1,5 +1,11 @@
 const { GClient, GLocalAuth } = require("./index");
 const qrcode = require("qrcode-terminal");
+const readline = require("readline");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 const client = new GClient({
   // proxyAuthentication: { username: 'username', password: 'password' },
@@ -27,9 +33,9 @@ client.on("qr", (qr) => {
 
 client.on("authenticated", async () => {
   console.log("AUTHENTICATED");
-  client.searchNumber("ID", "085771116774").then((result) => {
-    console.log(result);
-  });
+  // client.searchNumber("ID", "085771116774").then((result) => {
+  //   console.log(result);
+  // });
 });
 
 client.on("auth_failure", (msg) => {
@@ -39,4 +45,23 @@ client.on("auth_failure", (msg) => {
 
 client.on("ready", () => {
   console.log("READY");
+  hitung();
 });
+
+function hitung() {
+  rl.question("Masukan Country contoh (ID): ", (country) => {
+    rl.question("Masukan nomor: ", (nomor) => {
+      client.searchNumber(country, nomor).then((result) => {
+        console.log(result);
+      });
+
+      rl.question("Ingin melakukan perhitungan lagi? (y/n) ", (jawaban) => {
+        if (jawaban.toLowerCase() === "y") {
+          hitung();
+        } else {
+          rl.close();
+        }
+      });
+    });
+  });
+}

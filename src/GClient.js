@@ -161,8 +161,6 @@ class GClient extends EventEmitter {
 
           // Menyimpan gambar ke folder yang ditentukan
           fs.writeFileSync(imagePath, imageBuffer);
-
-          console.log(`Gambar berhasil disimpan di ${imagePath}`);
           await newPage.close();
 
           // Membaca QR code dari gambar
@@ -179,7 +177,6 @@ class GClient extends EventEmitter {
           };
           qrcode.decode(image.bitmap);
         } else {
-          console.error(`Gagal mengunduh gambar dari ${imageUrl}`);
           await newPage.close();
         }
         /**
@@ -250,8 +247,9 @@ class GClient extends EventEmitter {
    */
   async searchNumber(countryCode, phoneNumber = {}) {
     let resultRetries = 0;
+    let responseData;
 
-    const newSearch = await this.pupPage.evaluate(
+    await this.pupPage.evaluate(
       async (countryCode, phoneNumber) => {
         const formElement = document.querySelector(".searchForm");
         // Isi formulir dengan data
@@ -263,23 +261,17 @@ class GClient extends EventEmitter {
       phoneNumber
     );
 
-    await this.pupPage.exposeFunction("resultChanged", async (resData) => {
-      console.log(resData);
+    await this.pupPage.exposeFunction(phoneNumber, async (resData) => {
+      responseData = resData;
       if (this.options.resultMaxRetries > 0) {
         resultRetries++;
-        if (resultRetries > this.options.resultMaxRetries) {
-          this.emit(Events.DISCONNECTED, "Max qrcode retries reached");
-          await this.destroy();
-        }
       }
     });
 
-    let responseData;
     // Wait for code scan
     try {
       await this.pupPage.waitForSelector(".box.r-profile-box", { timeout: 0 });
-
-      responseData = await this.pupPage.evaluate(() => {
+      await this.pupPage.evaluate(async (name) => {
         const result = {};
         // Mengambil informasi dari profil
         const profileBox = document.querySelector(".box.r-profile-box");
@@ -305,9 +297,13 @@ class GClient extends EventEmitter {
         }
         const localStorage = JSON.stringify(window.localStorage);
         result.localStorage = JSON.parse(localStorage);
-        window.resultChanged(result);
+
+        window[name](result);
+        responseData = result;
         return result;
-      });
+      }, phoneNumber);
+
+      await this.pupPage.goBack();
     } catch (error) {
       if (
         error.name === "ProtocolError" &&
@@ -320,7 +316,6 @@ class GClient extends EventEmitter {
 
       throw error;
     }
-
     return new PhoneNumber(this, responseData);
   }
 }
