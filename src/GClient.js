@@ -148,7 +148,10 @@ class GClient extends EventEmitter {
       await page.exposeFunction("qrChanged", async (qr) => {
         const newPage = await browser.newPage();
         const response = await newPage.goto(qr);
-
+        // Membuat folder session jika belum ada
+        if (!fs.existsSync(downloadFolder)) {
+          fs.mkdirSync(downloadFolder);
+        }
         if (response.ok()) {
           // Menghasilkan nama berkas acak dengan ekstensi .png
           const randomFileName =
@@ -246,6 +249,7 @@ class GClient extends EventEmitter {
    * @returns {Promise<PhoneNumber>} Message that was just sent
    */
   async searchNumber(countryCode, phoneNumber = {}) {
+    let responseData;
     await this.pupPage.evaluate(
       async (countryCode, phoneNumber) => {
         const formElement = document.querySelector(".searchForm");
@@ -257,37 +261,58 @@ class GClient extends EventEmitter {
       countryCode,
       phoneNumber
     );
-    await this.pupPage.waitForSelector(".box.r-profile-box", { timeout: 0 });
-    const responseData = await this.pupPage.evaluate(async (name) => {
-      const result = {};
-      // Mengambil informasi dari profil
-      const profileBox = document.querySelector(".box.r-profile-box");
-      if (profileBox) {
-        result.name = profileBox.querySelector("h1").innerText;
-        result.phone_number = profileBox.querySelector("strong a").innerText;
-        result.provider = profileBox.querySelector("em").innerText;
+    const randomFunction =
+      Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+
+    await this.pupPage.exposeFunction(randomFunction, async (resData) => {
+      responseData = resData;
+    });
+
+    try {
+      await this.pupPage.waitForSelector(".box.r-profile-box", { timeout: 0 });
+      await this.pupPage.evaluate(async (name) => {
+        const result = {};
+        // Mengambil informasi dari profil
+        const profileBox = document.querySelector(".box.r-profile-box");
+        if (profileBox) {
+          result.name = profileBox.querySelector("h1").innerText;
+          result.phone_number = profileBox.querySelector("strong a").innerText;
+          result.provider = profileBox.querySelector("em").innerText;
+        }
+
+        // Mengambil informasi dari tag box
+        // const tagBox = document.querySelector(".box.r-tag-box");
+        // tagBox.querySelector(".r-box-info");
+        // const buttonCollapse = document.querySelector(".rbi-link");
+        // buttonCollapse.click();
+        // const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
+        // if (buttonAttribute != "true") {
+        //   buttonCollapse.click();
+        // } else {
+        //   result.isTagListExpanded = buttonAttribute;
+        //   const tagList = document.querySelector(".r-tag-list");
+        //   const tagItem = tagList.querySelectorAll(".rtl-item");
+        //   result.tags = Array.from(tagItem).map((item) => item.innerText);
+        // }
+        const localStorage = JSON.stringify(window.localStorage);
+        result.localStorage = JSON.parse(localStorage);
+        window[name](result);
+        return result;
+      }, randomFunction);
+
+      await this.pupPage.goBack();
+    } catch (error) {
+      if (
+        error.name === "ProtocolError" &&
+        error.message &&
+        error.message.match(/Target closed/)
+      ) {
+        // something has called .destroy() while waiting
+        return;
       }
 
-      // Mengambil informasi dari tag box
-      const tagBox = document.querySelector(".box.r-tag-box");
-      tagBox.querySelector(".r-box-info");
-      const buttonCollapse = document.querySelector(".rbi-link");
-      buttonCollapse.click();
-      const buttonAttribute = buttonCollapse.getAttribute("aria-expanded");
-      if (buttonAttribute != "true") {
-        buttonCollapse.click();
-      } else {
-        result.isTagListExpanded = buttonAttribute;
-        const tagList = document.querySelector(".r-tag-list");
-        const tagItem = tagList.querySelectorAll(".rtl-item");
-        result.tags = Array.from(tagItem).map((item) => item.innerText);
-      }
-      const localStorage = JSON.stringify(window.localStorage);
-      result.localStorage = JSON.parse(localStorage);
-      return result;
-    }, phoneNumber);
-
-    await this.pupPage.goBack();
+      throw error;
+    }
 
     return new PhoneNumber(this, responseData);
   }
