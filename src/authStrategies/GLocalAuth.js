@@ -8,7 +8,7 @@ const BaseAuthStrategy = require("./BaseAuthStrategy");
  * Local directory-based authentication
  * @param {object} options - options
  * @param {string} options.clientId - GClient id to distinguish instances if you are using multiple, otherwise keep null if you are using only one instance
- * @param {string} options.dataPath - Change the default path for saving session files, default is: "./.wwebjs_auth/"
+ * @param {string} options.dataPath - Change the default path for saving session files, default is: "./.gwebjs_auth/"
  */
 class GLocalAuth extends BaseAuthStrategy {
   constructor({ clientId, dataPath } = {}) {

@@ -15,15 +15,11 @@ const client = new GClient({
   },
   authStrategy: new GLocalAuth({
     clientId: "test-aja-inimah",
-    // dataPath: './.wwebjs_auth/'
+    // dataPath: './.gwebjs_auth/'
   }),
 });
 
 client.initialize();
-
-client.on("loading_screen", (percent, message) => {
-  console.log("LOADING SCREEN", percent, message);
-});
 
 client.on("qr", (qr) => {
   // NOTE: This event will not be fired if a session is specified.
@@ -36,11 +32,6 @@ client.on("authenticated", async () => {
   // client.searchNumber("ID", "085771116774").then((result) => {
   //   console.log(result);
   // });
-});
-
-client.on("auth_failure", (msg) => {
-  // Fired if session restore was unsuccessful
-  console.error("AUTHENTICATION FAILURE", msg);
 });
 
 client.on("ready", () => {
