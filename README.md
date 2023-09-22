@@ -41,3 +41,7 @@ gclient.initialize();
 ```
 
 Take a look at [example.js](https://github.com/ilhamridho04/get-contact.js/blob/main/test/searchNumber.test.js) for another example with more use cases.
+
+## Reference
+
+https://github.com/pedroslopez/whatsapp-web.js
