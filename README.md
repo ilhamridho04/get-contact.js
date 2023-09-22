@@ -4,7 +4,7 @@
 
 # whatsapp-web.js
 
-A WhatsApp API client that connects through the WhatsApp Web browser app
+A WhatsApp API gclient that connects through the WhatsApp Web browser app
 
 It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocked.
 
@@ -28,16 +28,16 @@ const { GClient } = require("get-contact.js");
 
 const gclient = new GClient();
 
-client.on("qr", (qr) => {
+gclient.on("qr", (qr) => {
   // Generate and scan this code with your phone
   console.log("QR RECEIVED", qr);
 });
 
-client.on("ready", () => {
+gclient.on("ready", () => {
   console.log("Client is ready!");
 });
 
-client.initialize();
+gclient.initialize();
 ```
 
 Take a look at [example.js](https://github.com/ilhamridho04/get-contact.js/blob/main/test/searchNumber.test.js) for another example with more use cases.
