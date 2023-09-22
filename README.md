@@ -2,13 +2,13 @@
 
 [![npm](https://img.shields.io/npm/v/get-contact.js.svg)](https://www.npmjs.com/package/get-contact.js)
 
-# whatsapp-web.js
+# getcontact-web.js
 
-A WhatsApp API gclient that connects through the WhatsApp Web browser app
+A GetContact API gclient that connects through the GetContact Web browser app
 
-It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocked.
+It uses Puppeteer to run a real instance of GetContact Web to avoid getting blocked.
 
-**NOTE:** I can't guarantee you will not be blocked by using this method, although it has worked for me. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
+**NOTE:** I can't guarantee you will not be blocked by using this method, although it has worked for me. GetContact does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
 
 ## Quick Links
 
@@ -17,7 +17,7 @@ It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocke
 
 ## Installation
 
-The module is now available on npm! `npm i whatsapp-web.js`
+The module is now available on npm! `npm i getcontact-web.js`
 
 Please note that Node v12+ is required.
 
