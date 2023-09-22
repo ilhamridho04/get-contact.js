@@ -6,6 +6,7 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const uploadsFolder = "./uploads";
 const downloadFolder = "./uploads/qrcode";
 const QrCode = require("qrcode-reader");
 const Jimp = require("jimp");
@@ -53,6 +54,14 @@ class GClient extends EventEmitter {
     this.pupPage = null;
 
     Util.setFfmpegPath(this.options.ffmpegPath);
+    // Membuat folder session jika belum ada
+    try {
+      if (!fs.existsSync(uploadsFolder)) {
+        fs.mkdirSync(uploadsFolder);
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan saat membuat folder:", error);
+    }
   }
 
   /**
@@ -148,10 +157,11 @@ class GClient extends EventEmitter {
       await page.exposeFunction("qrChanged", async (qr) => {
         const newPage = await browser.newPage();
         const response = await newPage.goto(qr);
-        // Membuat folder session jika belum ada
+
         if (!fs.existsSync(downloadFolder)) {
           fs.mkdirSync(downloadFolder);
         }
+
         if (response.ok()) {
           // Menghasilkan nama berkas acak dengan ekstensi .png
           const randomFileName =

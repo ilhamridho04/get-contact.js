@@ -49,19 +49,17 @@ client.on("ready", () => {
 });
 
 function hitung() {
-  rl.question("Masukan Country contoh (ID): ", (country) => {
-    rl.question("Masukan nomor: ", (nomor) => {
-      client.searchNumber(country, nomor).then((result) => {
-        console.log(result);
-      });
+  rl.question("Masukan nomor: ", (nomor) => {
+    client.searchNumber("ID", nomor).then((result) => {
+      console.log(result);
+    });
 
-      rl.question("Ingin melakukan perhitungan lagi? (y/n) ", (jawaban) => {
-        if (jawaban.toLowerCase() === "y") {
-          hitung();
-        } else {
-          rl.close();
-        }
-      });
+    rl.question("Ingin melakukan pencarian lagi? (y/n) ", (jawaban) => {
+      if (jawaban.toLowerCase() === "y") {
+        hitung();
+      } else {
+        rl.close();
+      }
     });
   });
 }
