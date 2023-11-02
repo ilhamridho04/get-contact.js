@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/get-contact.js.svg)](https://www.npmjs.com/package/get-contact.js)
 
-# getcontact-web.js
+# get-contact.js
 
 A GetContact API gclient that connects through the GetContact Web browser app
 
@@ -17,7 +17,7 @@ It uses Puppeteer to run a real instance of GetContact Web to avoid getting bloc
 
 ## Installation
 
-The module is now available on npm! `npm i getcontact-web.js`
+The module is now available on npm! `npm i get-contact.js`
 
 Please note that Node v12+ is required.
 
