@@ -14,6 +14,8 @@ const Jimp = require("jimp");
 const Util = require("./util/Util");
 const { GcontcWebURL, DefaultOptions, Events } = require("./util/Constants");
 const PhoneNumber = require("./structures/PhoneNumber");
+const HistoryFactory = require("./factories/HistoryFactory");
+const Histories = require("./structures/Histories");
 
 /**
  * Starting point for interacting with the WhatsApp Web API
@@ -325,6 +327,43 @@ class GClient extends EventEmitter {
     }
 
     return new PhoneNumber(this, responseData);
+  }
+  async getHistories() {
+    let histories = await this.pupPage.evaluate(() => {
+      const result = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          try {
+            const parsedData = JSON.parse(localStorage.getItem(key));
+            if (Array.isArray(parsedData)) {
+              result[key] = parsedData;
+            }
+          } catch (e) {
+            console.error(`Error parsing JSON for key ${key}: ${e}`);
+          }
+        }
+      }
+
+      const data = [];
+      for (const key in result) {
+        if (result.hasOwnProperty(key)) {
+          result[key].forEach(item => {
+            data.push({
+              badge: item.badge,
+              countryCode: item.countryCode,
+              date: item.date,
+              name: item.displayName,
+              image: item.image,
+              phone_number: item.number,
+            });
+          });
+        }
+      }
+      return data;
+    });
+
+    return new Histories(this, histories)._data;
   }
 }
 

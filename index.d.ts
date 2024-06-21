@@ -18,6 +18,8 @@ declare namespace GCWebJS {
       phoneNumber: PhoneNumber
     ): Promise<PhoneNumber>;
 
+    getHistories(): Promise<Histories[]>;
+
     /** Generic event */
     on(event: string, listener: (...args: any) => void): this;
 
@@ -56,6 +58,21 @@ declare namespace GCWebJS {
     provider: string;
     /** localStorage content */
     localStorage: object;
+  }
+
+  export interface Histories {
+    /** String that represent from badge */
+    badge: string;
+    /** String that represent from countryCode . */
+    countryCode: string;
+    /** String that represents from date */
+    date: string;
+    /** String that represents from name */
+    name: string;
+    /** String that represents from image */
+    image: string;
+    /** String that represents from phone_number */
+    phone_number: string;
   }
 
   export interface LocalWebCacheOptions {

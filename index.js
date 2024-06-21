@@ -10,6 +10,8 @@ module.exports = {
   // Structures
   PhoneNumber: require("./src/structures/PhoneNumber"),
 
+  History: require("./src/structures/Histories"),
+
   // Auth Strategies
   GLocalAuth: require("./src/authStrategies/GLocalAuth"),
 
